@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Join Tech World</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<div class="auth-container">
+
+
+<div class="auth-card">
+
+
+<h1 class="auth-card-title">
+
+Join Tech World 🚀
+
+</h1>
+
+
+<p class="auth-card-subtitle">
+
+Follow our WhatsApp Channel to complete your referral
+
+</p>
+
+
+
+<a 
+
+id="channelBtn"
+
+class="btn btn-primary"
+
+target="_blank"
+
+>
+
+Join WhatsApp Channel
+
+</a>
+
+
+
+<br><br>
+
+
+
+<button
+
+id="completeBtn"
+
+class="btn btn-secondary"
+
+>
+
+I Joined Channel
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+<script type="module">
+
+
+import {
+
+db
+
+}
+
+from "./firebase.js";
+
+
+
+import {
+
+collection,
+
+query,
+
+where,
+
+getDocs,
+
+updateDoc,
+
+doc,
+
+increment,
+
+addDoc
+
+}
+
+from
+
+"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+
+
+
+
+const channelLink =
+"https://whatsapp.com/channel/0029VbBw2JR9cDDiNozMYF1p";
+
+
+
+
+document
+
+.getElementById("channelBtn")
+
+.href = channelLink;
+
+
+
+
+
+
+
+let refCode =
+
+new URLSearchParams(
+
+window.location.search
+
+)
+
+.get("ref");
+
+
+
+
+
+
+document
+
+.getElementById("completeBtn")
+
+.onclick = async()=>{
+
+
+
+
+
+let users = query(
+
+collection(db,"users"),
+
+where(
+
+"refCode",
+
+"==",
+
+refCode
+
+)
+
+);
+
+
+
+
+
+let result =
+
+await getDocs(users);
+
+
+
+
+
+if(result.empty){
+
+alert("Invalid referral link");
+
+return;
+
+}
+
+
+
+
+
+
+
+result.forEach(async(user)=>{
+
+
+
+await updateDoc(
+
+doc(
+
+db,
+
+"users",
+
+user.id
+
+),
+
+{
+
+
+points:
+
+increment(10)
+
+
+}
+
+);
+
+
+
+
+await addDoc(
+
+collection(db,"referrals"),
+
+{
+
+
+referrerUid:user.id,
+
+
+date:new Date()
+
+
+}
+
+
+);
+
+
+
+});
+
+
+
+
+
+alert(
+
+"Completed! Thank you for joining 🎉"
+
+);
+
+
+
+};
+
+
+</script>
+
+
+</body>
+
+</html>
